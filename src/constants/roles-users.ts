@@ -1,0 +1,40 @@
+/* export const Ro = {
+  admin: 'admin',
+  employees: ['employee-admin', 'employee-reader', 'employee-writer'],
+  employee_admin: 'employee-admin',
+  employee_writer: 'employee-reader',
+  employee_reader: 'employee-reader',
+  generateStaff: 'generateStaff',
+  generateEmployee: 'generateEmployee',
+  recoveryPass: 'recoveryPass',
+  client: 'client',
+  staff: 'staff',
+  allUsers: [
+    'staff',
+    'client',
+    'admin',
+    'employee-admin',
+    'employee-reader',
+    'employee-writer',
+  ],
+}; */
+
+export const Rol = {
+  admin: 'admin',
+  employees: ['project_manager', 'designer'],
+  employee_project_manager: 'project_manager',
+  employee_designer: 'designer',
+  generateStaff: 'generateStaff',
+  generateEmployee: 'generateEmployee',
+  recoveryPass: 'recoveryPass',
+  client: 'client',
+  staff: 'staff',
+  allUsers: [
+    'staff',
+    'client',
+    'admin',
+    'project_manager',
+    'designer',
+    'employee',
+  ],
+};
