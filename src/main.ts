@@ -11,7 +11,6 @@ async function bootstrap() {
       'aqui yisus va a encontra todo sobre el backend de el proyecto La Esperanza',
     )
     .setVersion('1.0')
-    .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
