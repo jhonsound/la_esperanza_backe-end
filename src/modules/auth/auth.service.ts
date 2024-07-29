@@ -17,6 +17,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
+    console.log('🚀 ~ AuthService ~ register ~ registerDto:', registerDto);
     try {
       const userFound = await this.usersService.findByEmail(
         registerDto.userName,
@@ -43,18 +44,26 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<TokenDto> {
-    const user = await this.validateUser(loginDto.userName, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+    try {
+      const user = await this.validateUser(
+        loginDto.userName,
+        loginDto.password,
+      );
+      if (!user) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+      const { access_token } = this.generateToken(user);
+
+      const loginUser: UserTokenDto = {
+        user,
+        access_token,
+      };
+
+      return loginUser;
+    } catch (error) {
+      console.log('🚀 ~ AuthService ~ login ~ error:', error);
+      throw new HttpException(error, HttpStatus.CONFLICT);
     }
-    const { access_token } = this.generateToken(user);
-
-    const loginUser: UserTokenDto = {
-      user,
-      access_token,
-    };
-
-    return loginUser;
   }
 
   private async validateUser(userName: string, pass: string): Promise<any> {

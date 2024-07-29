@@ -1,19 +1,16 @@
-// src/entities/usuario.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  Generated,
-  /* OneToMany, */
+  ManyToMany,
 } from 'typeorm';
-/* import { ProgresoEstudiante } from './progreso-estudiante.entity'; */
 import { Role } from 'src/modules/roles/entities/role.entity';
+import { Mission } from 'src/modules/missions/entities/mission.entity';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  @Generated('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 100 })
@@ -28,9 +25,12 @@ export class User {
   @Column({ name: 'identity_card' })
   identityCard: number;
 
+  @Column()
+  score: number;
+
   @ManyToOne(() => Role, (role) => role.user)
   rol: Role;
 
-  /* @OneToMany(() => ProgresoEstudiante, (progreso) => progreso.usuario)
-  progresos: ProgresoEstudiante[]; */
+  @ManyToMany(() => Mission, (mission) => mission.users)
+  missions: Mission[];
 }
