@@ -1,10 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 /* import { UpdateUserDto } from './dto/update-user.dto'; */
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ROLE_REPOSITORY, USER_REPOSITORY } from 'src/constants/repository';
 import { RegisterDto } from '../auth/dto/auth.dto';
 import { Role } from '../roles/entities/role.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +18,6 @@ export class UsersService {
   async create(createUserDto: RegisterDto) {
     const userResponse = this.clientRepo.create(createUserDto);
     const rol = await this.roleRepo.findOneBy({ id: +createUserDto.rolId });
-    console.log('🚀 ~ UsersService ~ create ~ rol:', rol);
     userResponse.rol = rol;
     return await this.clientRepo.save(userResponse);
   }
@@ -30,9 +30,28 @@ export class UsersService {
     return await this.clientRepo.findOneBy({ userName });
   }
 
-  /*  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  } */
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.clientRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
+
+    // Actualizar los campos del usuario
+    Object.assign(user, updateUserDto);
+
+    // Si se proporciona un nuevo rolId, actualizar el rol
+    if (updateUserDto.rolId) {
+      const newRole = await this.roleRepo.findOneBy({
+        id: +updateUserDto.rolId,
+      });
+      if (newRole) {
+        user.rol = newRole;
+      }
+    }
+
+    // Guardar y devolver el usuario actualizado
+    return await this.clientRepo.save(user);
+  }
 
   remove(id: number) {
     return `This action removes a #${id} user`;

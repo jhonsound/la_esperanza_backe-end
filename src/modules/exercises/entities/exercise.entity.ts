@@ -13,6 +13,9 @@ export class Exercise {
   @Column({ type: 'text', nullable: true })
   descripcion: string;
 
+  @Column({ type: 'text', nullable: true })
+  link: string;
+
   @ManyToOne(() => Level, (level) => level.exercises)
   level: Level;
 }

@@ -1,12 +1,17 @@
-// src/entities/mision.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Level } from 'src/modules/levels/entities/level.entity';
-/* import { ProgresoEstudiante } from './progreso-estudiante.entity'; */
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity('missions')
 export class Mission {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ length: 100 })
   nombre: string;
@@ -14,9 +19,31 @@ export class Mission {
   @Column({ type: 'text', nullable: true })
   descripcion: string;
 
-  @OneToMany(() => Level, (level) => level.mision)
+  @ManyToMany(() => Level, (level) => level.missions)
+  @JoinTable({
+    name: 'mission_levels',
+    joinColumn: {
+      name: 'mission_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'level_id',
+      referencedColumnName: 'id',
+    },
+  })
   levels: Level[];
 
-  /* @OneToMany(() => ProgresoEstudiante, progreso => progreso.mision)
-  progresos: ProgresoEstudiante[]; */
+  @ManyToMany(() => User, (user) => user.missions)
+  @JoinTable({
+    name: 'mission_users',
+    joinColumn: {
+      name: 'mission_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+  })
+  users: User[];
 }
