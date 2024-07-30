@@ -10,6 +10,8 @@ export class Exercise {
   @Column({ type: 'text', nullable: true })
   status: string;
 
+  @Column({ type: 'text', nullable: true })
+  name: string;
 
   @Column({ type: 'text', nullable: true })
   urlFrame: string;

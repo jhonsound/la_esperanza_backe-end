@@ -28,11 +28,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  /*  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.(+id);
+  @Get(':id')
+  findOneBy(@Param('id') param: string, @Body() by: { by: string }) {
+    return this.usersService.findBy(param, by);
   }
- */
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
