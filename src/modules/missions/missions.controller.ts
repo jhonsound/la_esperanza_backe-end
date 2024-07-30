@@ -16,8 +16,12 @@ import { MissionService } from './missions.service';
 export class MissionController {
   constructor(private readonly missionService: MissionService) {}
 
-  /* @Post()
+  @Post()
   create(@Body() createMissionDto: CreateMissionDto) {
+    console.log(
+      '🚀 ~ MissionController ~ create ~ createMissionDto:',
+      createMissionDto,
+    );
     return this.missionService.create(createMissionDto);
   }
 
@@ -74,5 +78,5 @@ export class MissionController {
     @Param('userId', ParseIntPipe) userId: string,
   ) {
     return this.missionService.removeUser(id, userId);
-  } */
+  }
 }

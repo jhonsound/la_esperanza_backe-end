@@ -2,11 +2,11 @@ import { IsString, IsOptional, IsArray, IsNumber } from 'class-validator';
 
 export class CreateMissionDto {
   @IsString()
-  nombre: string;
+  name: string;
 
   @IsString()
   @IsOptional()
-  descripcion?: string;
+  description?: string;
 
   @IsArray()
   @IsNumber({}, { each: true })

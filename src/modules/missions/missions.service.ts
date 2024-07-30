@@ -16,27 +16,38 @@ export class MissionService {
   constructor(
     @Inject(MISSION_REPOSITORY)
     private missionRepository: Repository<Mission>,
+
     @Inject(LEVEL_REPOSITORY)
     private levelRepository: Repository<Level>,
+
     @Inject(USER_REPOSITORY)
     private userRepository: Repository<User>,
   ) {}
 
   async create(createMissionDto: CreateMissionDto): Promise<Mission> {
-    const mission = this.missionRepository.create(createMissionDto);
-    return await this.missionRepository.save(mission);
+    console.log(
+      '🚀 ~ MissionService ~ create ~ createMissionDto:',
+      createMissionDto,
+    );
+    const mission = this.missionRepository.create({
+      name: createMissionDto.name,
+      missionDescription: createMissionDto.description,
+    });
+    console.log('🚀 ~ MissionService ~ create ~ mission:', mission);
+    await this.missionRepository.save(mission);
+    return mission;
   }
 
   async findAll(): Promise<Mission[]> {
     return await this.missionRepository.find({
-      relations: ['levels', 'user'],
+      relations: ['levels', 'levels.exercises', 'users'],
     });
   }
 
   async findOne(id: string): Promise<Mission> {
     const mission = await this.missionRepository.findOne({
       where: { id },
-      relations: ['levels', 'user'],
+      relations: ['levels', 'levels.exercises', 'users'],
     });
     if (!mission) {
       throw new NotFoundException(`Mission with ID ${id} not found`);
