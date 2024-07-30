@@ -10,8 +10,8 @@ export default () => ({
     database: process.env.DATA_BASE_NAME,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     synchronize: true,
-    /* ssl: {
+    ssl: {
       rejectUnauthorized: false,
-    }, */
+    },
   },
 });
