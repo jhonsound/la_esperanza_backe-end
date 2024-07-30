@@ -31,6 +31,16 @@ export class UsersService {
     return await this.clientRepo.findOneBy({ userName });
   }
 
+  async findBy(param: string, { by }: { by: string }) {
+    try {
+      console.log('🚀 ~ UsersService ~ findBy ~ by:', by);
+      console.log('🚀 ~ UsersService ~ findBy ~ param:', param);
+      return await this.clientRepo.findOneBy({ [by]: param });
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.clientRepo.findOne({ where: { id } });
     if (!user) {
