@@ -7,14 +7,12 @@ export class Exercise {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100 })
-  nombre: string;
+  @Column({ type: 'text', nullable: true })
+  status: string;
+
 
   @Column({ type: 'text', nullable: true })
-  descripcion: string;
-
-  @Column({ type: 'text', nullable: true })
-  link: string;
+  urlFrame: string;
 
   @ManyToOne(() => Level, (level) => level.exercises)
   level: Level;

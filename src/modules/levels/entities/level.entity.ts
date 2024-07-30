@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Mission } from 'src/modules/missions/entities/mission.entity';
 import { Exercise } from 'src/modules/exercises/entities/exercise.entity';
@@ -14,10 +14,13 @@ export class Level {
   id: string;
 
   @Column({ length: 100 })
-  nombre: string;
+  name: string;
 
-  @ManyToMany(() => Mission, (mission) => mission.levels)
-  missions: Mission[];
+  @Column({ length: 100 })
+  title: string;
+
+  @ManyToOne(() => Mission, (mission) => mission.levels)
+  missions: Mission;
 
   @OneToMany(() => Exercise, (exercise) => exercise.level)
   exercises: Exercise[];
