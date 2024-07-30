@@ -19,6 +19,7 @@ export class UsersService {
     const userResponse = this.clientRepo.create(createUserDto);
     const rol = await this.roleRepo.findOneBy({ id: +createUserDto.rolId });
     userResponse.rol = rol;
+    userResponse.score = 0;
     return await this.clientRepo.save(userResponse);
   }
 

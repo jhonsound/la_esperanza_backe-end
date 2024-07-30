@@ -15,7 +15,7 @@ export class RegisterDto {
 
   @IsNotEmpty()
   @IsString()
-  rolId: number;
+  rolId: string;
 }
 
 export class LoginDto {

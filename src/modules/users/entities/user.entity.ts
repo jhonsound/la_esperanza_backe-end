@@ -23,7 +23,7 @@ export class User {
   password: string;
 
   @Column({ name: 'identity_card' })
-  identityCard: number;
+  identityCard: string;
 
   @Column()
   score: number;
