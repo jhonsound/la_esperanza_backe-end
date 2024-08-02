@@ -66,10 +66,7 @@ export class MissionController {
   }
 
   @Post(':id/users/:userId')
-  addUser(
-    @Param('id', ParseIntPipe) id: string,
-    @Param('userId', ParseIntPipe) userId: string,
-  ) {
+  addUser(@Param('id') id: string, @Param('userId') userId: string) {
     return this.missionService.addUser(id, userId);
   }
 
