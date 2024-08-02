@@ -11,7 +11,8 @@ import {
 import { CreateMissionDto } from './dto/create-mission.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
 import { MissionService } from './missions.service';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('missions')
 @Controller('missions')
 export class MissionController {
   constructor(private readonly missionService: MissionService) {}

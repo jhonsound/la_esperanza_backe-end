@@ -1,4 +1,6 @@
 import { IsString, MinLength, IsNotEmpty } from 'class-validator';
+import { User } from 'src/modules/users/entities/user.entity';
+import { IsJWT } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
@@ -7,6 +9,9 @@ export class RegisterDto {
 
   @IsNotEmpty()
   userName: string;
+
+  @IsNotEmpty()
+  score: number;
 
   @IsNotEmpty()
   identityCard: string;
@@ -19,16 +24,14 @@ export class RegisterDto {
   @IsNotEmpty()
   @IsString()
   rolId: string;
+
+  clanId: number;
 }
 
 export class LoginDto {
   userName: string;
-
   password: string;
 }
-
-import { IsJWT } from 'class-validator';
-import { User } from 'src/modules/users/entities/user.entity';
 
 export class TokenDto {
   @IsJWT()

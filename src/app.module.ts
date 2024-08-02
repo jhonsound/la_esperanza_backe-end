@@ -7,6 +7,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { LevelsModule } from './modules/levels/levels.module';
 import { UsersModule } from './modules/users/users.module';
 import { ExercisesModule } from './modules/exercises/exercises.module';
+import { ClansModule } from './modules/clans/clans.module';
 import configuration from './modules/database/configuration';
 
 @Module({
@@ -19,6 +20,7 @@ import configuration from './modules/database/configuration';
     LevelsModule,
     UsersModule,
     ExercisesModule,
+    ClansModule,
   ],
 })
 export class AppModule {}

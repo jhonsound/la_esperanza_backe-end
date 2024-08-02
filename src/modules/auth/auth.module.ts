@@ -6,6 +6,8 @@ import { UsersService } from '../users/users.service';
 import { DatabaseModule } from '../database/database.module';
 import { userProvider } from '../users/users.provider';
 import { roleProvider } from '../roles/role.provider';
+import { clansProvider } from '../clans/clans.provider';
+import { ClansService } from '../clans/clans.service';
 
 @Module({
   imports: [
@@ -15,6 +17,13 @@ import { roleProvider } from '../roles/role.provider';
     DatabaseModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersService, ...userProvider, ...roleProvider],
+  providers: [
+    AuthService,
+    UsersService,
+    ClansService,
+    ...userProvider,
+    ...roleProvider,
+    ...clansProvider,
+  ],
 })
 export class AuthModule {}
