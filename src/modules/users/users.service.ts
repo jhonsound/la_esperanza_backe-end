@@ -88,11 +88,16 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.userRepository.find({ relations: ['clan', 'rol'] });
+    return await this.userRepository.find({
+      relations: ['clan', 'rol', 'missions.levels.exercises'],
+    });
   }
 
   async findByEmail(userName: string) {
-    return await this.userRepository.findOneBy({ userName });
+    return await this.userRepository.findOne({
+      where: { userName },
+      relations: ['clan', 'rol', 'missions.levels.exercises'],
+    });
   }
 
   async findBy(param: string, { by }: { by: string }) {
