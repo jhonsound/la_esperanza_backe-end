@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Role } from 'src/modules/roles/entities/role.entity';
 import { Mission } from 'src/modules/missions/entities/mission.entity';
+import { Clan } from 'src/modules/clans/entities/clans.entity';
 
 @Entity('users')
 export class User {
@@ -30,6 +31,9 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.user)
   rol: Role;
+
+  @ManyToOne(() => Clan, (clan) => clan.members)
+  clan: Clan;
 
   @ManyToMany(() => Mission, (mission) => mission.users)
   missions: Mission[];
