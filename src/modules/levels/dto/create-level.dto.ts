@@ -6,6 +6,9 @@ export class CreateLevelDto {
 
   @IsUUID()
   missionId: string;
+
+  @IsString()
+  title: string;
 }
 
 export class UpdateLevelDto {
