@@ -41,6 +41,7 @@ export class UsersController {
 
   @Post(':id')
   findOneBy(@Param('id') param: string, @Body() by: { by: string }) {
+    console.log('🚀 ~ UsersController ~ findOneBy ~ by:', by);
     return this.usersService.findBy(param, by);
   }
 
