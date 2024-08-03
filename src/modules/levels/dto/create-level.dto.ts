@@ -29,6 +29,9 @@ export class AddExerciseDto {
   status: string;
 
   @IsString()
+  name: string;
+
+  @IsString()
   @IsOptional()
   urlFrame: string;
 }
