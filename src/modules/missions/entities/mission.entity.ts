@@ -20,6 +20,9 @@ export class Mission {
   @Column({ name: 'mission_description' })
   missionDescription: string;
 
+  @Column({ type: 'int', default: 0 })
+  score: number; // Campo para puntaje
+
   @OneToMany(() => Level, (level) => level.missions)
   levels: Level[];
 

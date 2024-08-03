@@ -16,6 +16,9 @@ export class Exercise {
   @Column({ type: 'text', nullable: true })
   urlFrame: string;
 
+  @Column({ type: 'int', default: 0 })
+  score: number; // Campo para puntaje
+
   @ManyToOne(() => Level, (level) => level.exercises)
   level: Level;
 }
