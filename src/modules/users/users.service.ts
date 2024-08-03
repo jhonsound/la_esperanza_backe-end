@@ -102,12 +102,14 @@ export class UsersService {
 
   async findBy(param: string, { by }: { by: string }) {
     try {
-      return await this.userRepository.findOne({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...user } = await this.userRepository.findOne({
         where: {
           [by]: param,
         },
         relations: ['clan.members', 'rol.user', 'missions.levels.exercises'],
       });
+      return user;
     } catch (error) {
       throw new NotFoundException(error);
     }
