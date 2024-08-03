@@ -102,7 +102,12 @@ export class UsersService {
 
   async findBy(param: string, { by }: { by: string }) {
     try {
-      return await this.userRepository.findOneBy({ [by]: param });
+      return await this.userRepository.findOne({
+        where: {
+          [by]: param,
+        },
+        relations: ['clan.members', 'rol.user', 'missions.levels.exercises'],
+      });
     } catch (error) {
       throw new NotFoundException(error);
     }
