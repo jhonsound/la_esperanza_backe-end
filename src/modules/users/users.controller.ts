@@ -39,7 +39,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
+  @Post(':id')
   findOneBy(@Param('id') param: string, @Body() by: { by: string }) {
     return this.usersService.findBy(param, by);
   }
