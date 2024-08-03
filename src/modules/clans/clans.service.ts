@@ -21,7 +21,7 @@ export class ClansService {
   }
 
   async findAll(): Promise<Clan[]> {
-    return await this.clansRepository.find();
+    return await this.clansRepository.find({ relations: ['members'] });
   }
 
   async findOne(id: number): Promise<Clan> {

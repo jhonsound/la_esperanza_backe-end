@@ -96,7 +96,7 @@ export class UsersService {
   async findByEmail(userName: string) {
     return await this.userRepository.findOne({
       where: { userName },
-      relations: ['clan', 'rol', 'missions.levels.exercises'],
+      relations: ['clan.members', 'rol.users', 'missions.levels.exercises'],
     });
   }
 
