@@ -109,6 +109,7 @@ export class UsersService {
         },
         relations: ['clan.members', 'rol.user', 'missions.levels.exercises'],
       });
+      console.log('🚀 ~ UsersService ~ findBy ~ user:', user);
       return user;
     } catch (error) {
       throw new NotFoundException(error);
