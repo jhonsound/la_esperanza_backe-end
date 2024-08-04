@@ -102,4 +102,25 @@ export class MissionService {
     mission.users = mission.users.filter((user) => user.id !== userId);
     return await this.missionRepository.save(mission);
   }
+
+  async updateMissionScore(missionId: string): Promise<void> {
+    const mission = await this.missionRepository.findOne({
+      where: { id: missionId },
+      relations: ['levels', 'users'],
+    });
+    if (!mission) {
+      throw new Error('Mission not found');
+    }
+
+    mission.score = mission.levels.reduce(
+      (total, level) => total + level.score,
+      0,
+    );
+    await this.missionRepository.save(mission);
+
+    for (const user of mission.users) {
+      user.score += mission.score;
+      await this.userRepository.save(user);
+    }
+  }
 }

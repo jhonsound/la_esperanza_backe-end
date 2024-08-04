@@ -13,6 +13,7 @@ import {
   UpdateLevelDto,
 } from './dto/create-level.dto';
 import { Exercise } from '../exercises/entities/exercise.entity';
+import { MissionService } from '../missions/missions.service';
 
 @Injectable()
 export class LevelsService {
@@ -23,6 +24,7 @@ export class LevelsService {
     private missionsRepository: Repository<Mission>,
     @Inject(EXERCISES_REPOSITORY)
     private exercisesRepository: Repository<Exercise>,
+    private readonly missionService: MissionService,
   ) {}
 
   async findAll(): Promise<Level[]> {
@@ -110,5 +112,23 @@ export class LevelsService {
       level,
     });
     return this.exercisesRepository.save(exercise);
+  }
+
+  async updateLevelScore(levelId: string): Promise<void> {
+    const level = await this.levelsRepository.findOne({
+      where: { id: levelId },
+      relations: ['exercises', 'missions'],
+    });
+    if (!level) {
+      throw new Error('Level not found');
+    }
+
+    level.score = level.exercises.reduce(
+      (total, exercise) => total + exercise.score,
+      0,
+    );
+    await this.levelsRepository.save(level);
+
+    await this.missionService.updateMissionScore(level.missions.id);
   }
 }

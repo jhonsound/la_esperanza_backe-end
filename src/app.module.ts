@@ -8,6 +8,7 @@ import { LevelsModule } from './modules/levels/levels.module';
 import { UsersModule } from './modules/users/users.module';
 import { ExercisesModule } from './modules/exercises/exercises.module';
 import { ClansModule } from './modules/clans/clans.module';
+import { SupabaseModule } from './modules/supabase/supabase.module';
 import configuration from './modules/database/configuration';
 
 @Module({
@@ -21,6 +22,7 @@ import configuration from './modules/database/configuration';
     UsersModule,
     ExercisesModule,
     ClansModule,
+    SupabaseModule,
   ],
 })
 export class AppModule {}

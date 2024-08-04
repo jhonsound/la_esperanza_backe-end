@@ -19,6 +19,9 @@ export class Level {
   @Column({ length: 100 })
   title: string;
 
+  @Column({ type: 'int', default: 0 })
+  score: number; // Campo para puntaje
+
   @ManyToOne(() => Mission, (mission) => mission.levels)
   missions: Mission;
 

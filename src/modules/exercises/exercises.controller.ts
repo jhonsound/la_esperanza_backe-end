@@ -22,6 +22,14 @@ export class ExercisesController {
     return this.exercisesService.create(createExerciseDto);
   }
 
+  @Post(':exerciseId')
+  updateExerciseScore(
+    @Param('exerciseId') exerciseId: number,
+    @Body() score: number,
+  ) {
+    return this.exercisesService.updateExerciseScore(exerciseId, score);
+  }
+
   @Get()
   findAll() {
     return this.exercisesService.findAll();
