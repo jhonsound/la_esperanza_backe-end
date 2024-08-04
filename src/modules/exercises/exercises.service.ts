@@ -14,9 +14,9 @@ export class ExercisesService {
     private readonly levelService: LevelsService,
   ) {}
 
-  /*   create(createExerciseDto: CreateExerciseDto) {
+  create(createExerciseDto: CreateExerciseDto) {
     return 'This action adds a new exercise';
-  } */
+  }
 
   async updateExerciseScore(exerciseId: number, score: number): Promise<void> {
     const exercise = await this.exerciseRepository.findOne({
@@ -41,9 +41,9 @@ export class ExercisesService {
     return `This action returns a #${id} exercise`;
   }
 
-  /*   update(id: number, updateExerciseDto: UpdateExerciseDto) {
+  update(id: number, updateExerciseDto: UpdateExerciseDto) {
     return `This action updates a #${id} exercise`;
-  } */
+  }
 
   remove(id: number) {
     return `This action removes a #${id} exercise`;

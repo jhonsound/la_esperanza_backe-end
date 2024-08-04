@@ -1,6 +1,8 @@
 export default () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
   resend: process.env.RESEND,
+  supabaseKey: process.env.SUPABASE_KEY,
+  supabaseUrl: process.env.SUPABASE_URL,
   database: {
     type: 'postgres',
     host: process.env.DATA_BASE_HOST,
