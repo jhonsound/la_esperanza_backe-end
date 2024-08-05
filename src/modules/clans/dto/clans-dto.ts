@@ -3,6 +3,7 @@ export class CreateClanDto {
   average: number;
   status?: string;
   name?: string;
+  insigne: string;
 }
 
 // update-clan.dto.ts
