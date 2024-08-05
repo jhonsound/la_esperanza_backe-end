@@ -10,8 +10,12 @@ export class Clan {
   @Column()
   average: number;
 
-  @Column()
-  insigne: 'Motivated' | 'Achiever' | 'Leader' | 'Innovator' | '';
+  @Column({
+    type: 'enum',
+    enum: ['Motivated', 'Achiever', 'Leader', 'Innovator'],
+    default: 'Motivated',
+  })
+  insigne: string;
 
   @Column({ type: 'text', nullable: true })
   status: string;
