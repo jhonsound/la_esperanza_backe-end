@@ -55,7 +55,6 @@ export class UsersController {
     @Param('userId') userId: string,
     @Param('missionId') missionId: string,
   ) {
-    console.log('🚀 ~ UsersController ~ missionId:', missionId);
     return this.usersService.assignMissionToUser(userId, missionId);
   }
 
@@ -78,7 +77,6 @@ export class UsersController {
 
   @Post(':id')
   findOneBy(@Param('id') param: string, @Body() by: { by: string }) {
-    console.log('🚀 ~ UsersController ~ findOneBy ~ by:', by);
     return this.usersService.findBy(param, by);
   }
 

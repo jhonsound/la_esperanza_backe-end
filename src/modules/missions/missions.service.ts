@@ -74,22 +74,18 @@ export class MissionService {
   }
 
   async addLevel(missionId: string, levelId: string) /* : Promise<Mission> */ {
-    console.log('🚀 ~ MissionService ~ addLevel ~ levelId:', levelId);
-    console.log('🚀 ~ MissionService ~ addLevel ~ missionId:', missionId);
     try {
       const mission = await this.findOne(missionId);
       const level = await this.levelRepository.findOne({
         where: { id: levelId },
       });
-      console.log('🚀 ~ MissionService ~ addLevel ~ level:', level);
       if (!level) {
         throw new NotFoundException(`Level with ID ${levelId} not found`);
       }
       mission.levels.push(level);
       return await this.missionRepository.save(mission);
     } catch (error) {
-      console.log('🚀 ~ MissionService ~ addLevel ~ error:', error);
-      throw new Error(error);
+      throw new NotFoundException(error.message);
     }
   }
 

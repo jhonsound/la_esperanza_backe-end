@@ -1,6 +1,5 @@
 // create-clan.dto.ts
 export class CreateClanDto {
-  id: number;
   average: number;
   status?: string;
   name?: string;

@@ -33,8 +33,7 @@ export class LevelsService {
         relations: ['missions', 'exercises'],
       });
     } catch (error) {
-      console.log('🚀 ~ LevelsService ~ findAll ~ error:', error);
-      throw new NotFoundException(error);
+      throw new NotFoundException(error.message);
     }
   }
 
