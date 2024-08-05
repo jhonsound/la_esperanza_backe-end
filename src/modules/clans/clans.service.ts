@@ -15,7 +15,6 @@ export class ClansService {
   ) {}
 
   async create(createClanDto: CreateClanDto): Promise<Clan> {
-    console.log('🚀 ~ ClansService ~ create ~ createClanDto:', createClanDto);
     createClanDto.average = +createClanDto.average;
     const clan = this.clansRepository.create(createClanDto);
 

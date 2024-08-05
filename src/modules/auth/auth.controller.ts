@@ -11,13 +11,11 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    console.log('🚀 ~ AuthController ~ register ~ registerDto:', registerDto);
     return this.authService.register(registerDto);
   }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<TokenDto> {
-    console.log('🚀 ~ AuthController ~ login ~ loginDto:', loginDto);
     return this.authService.login(loginDto);
   }
 }
