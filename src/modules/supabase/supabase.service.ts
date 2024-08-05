@@ -1,25 +1,17 @@
-// src/example/example.service.ts
+// src/modules/supabase/supabase.service.ts
 import { Injectable, Inject } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { SUPABASE_CLIENT } from 'src/constants/supabase';
-import * as multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+
 @Injectable()
 export class SupabaseService {
   constructor(
-    @Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient,
+    @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient,
   ) {}
 
-  async getData() {
-    const { data, error } = await this.supabase.from('your_table').select('*');
-    if (error) {
-      throw new Error(error.message);
-    }
-    return data;
-  }
-
-  /*   async uploadFile(file: Express.Multer.File, bucket: string): Promise<any> {
+  async uploadFile(file: Express.MulterFile, bucket: string): Promise<any> {
     const { originalname, buffer } = file;
-    const fileName = `${uuidv4()}-${originalname}`; // Genera un nombre único para el archivo
+    const fileName = `${uuidv4()}-${originalname}`;
 
     const { data, error } = await this.supabase.storage
       .from(bucket)
@@ -30,5 +22,5 @@ export class SupabaseService {
     }
 
     return data;
-  } */
+  }
 }
