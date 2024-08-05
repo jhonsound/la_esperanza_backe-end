@@ -163,16 +163,21 @@ export class UsersService {
           `Mission with ID '795e2a9d-c4c5-43f6-8b0c-670aa49e833a not found`,
         );
       }
-      const user = this.userRepository.create({
-        ...userData,
-        rol: role,
-        clan: clan,
-      });
-      /* user.studentMissions.push(mission); */
 
-      return await this.userRepository.save(user);
+      const userSave = await this.userRepository.save(
+        this.userRepository.create({
+          ...userData,
+          rol: role,
+          clan: clan,
+        }),
+      );
+      await this.assignMissionToUser(
+        userSave.id,
+        '7a32c456-d561-4ef0-8362-2b3d39ad7f86',
+      );
+      return userSave;
     } catch (error) {
-      throw new NotFoundException(error);
+      throw new NotFoundException(error.message);
     }
   }
   async assignMissionToUser(userId: string, missionId: string) {

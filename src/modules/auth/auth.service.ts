@@ -30,13 +30,13 @@ export class AuthService {
         );
       }
       const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-  
+
       const newUser = await this.usersService.create({
         ...registerDto,
         password: hashedPassword,
       });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = newUser;
+      const { ...result } = newUser;
       const { access_token } = this.generateToken(result);
       return { ...result, access_token };
     } catch (error) {
