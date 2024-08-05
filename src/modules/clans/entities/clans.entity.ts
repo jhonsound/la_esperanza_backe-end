@@ -12,7 +12,7 @@ export class Clan {
 
   @Column({
     type: 'enum',
-    enum: ['Motivated', 'Achiever', 'Leader', 'Innovator'],
+    enum: ['Motivated', 'Achiever', 'Leader', 'Innovator', 'Basic'],
     default: 'Motivated',
   })
   insigne: string;
