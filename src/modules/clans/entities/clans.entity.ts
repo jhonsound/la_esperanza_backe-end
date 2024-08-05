@@ -1,10 +1,10 @@
 // src/entities/ejercicio.entity.ts
 import { User } from 'src/modules/users/entities/user.entity';
-import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('clan')
 export class Clan {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column()

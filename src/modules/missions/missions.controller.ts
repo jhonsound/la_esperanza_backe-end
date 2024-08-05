@@ -19,10 +19,6 @@ export class MissionController {
 
   @Post()
   create(@Body() createMissionDto: CreateMissionDto) {
-    console.log(
-      '🚀 ~ MissionController ~ create ~ createMissionDto:',
-      createMissionDto,
-    );
     return this.missionService.create(createMissionDto);
   }
 
@@ -51,7 +47,6 @@ export class MissionController {
 
   @Post('add-level/:id/levels/:levelId')
   addLevel(@Param('id') id: string, @Param('levelId') levelId: string) {
-    console.log("🚀 ~ MissionController ~ addLevel ~ id:", id)
     return this.missionService.addLevel(id, levelId);
   }
 
