@@ -275,7 +275,6 @@ export class UsersService {
           'studentMissions.studentLevels.studentExercises.exercise',
         ],
       });
-      users.map((user) => delete user.password);
       return users;
     } catch (error) {
       throw new NotFoundException(error);
@@ -304,6 +303,7 @@ export class UsersService {
           'studentMissions.studentLevels.studentExercises.exercise',
         ],
       });
+      delete user.password;
       return user;
     } catch (error) {
       throw new NotFoundException(error.message);
