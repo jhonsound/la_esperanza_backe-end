@@ -80,7 +80,7 @@ export class UsersController {
     return this.usersService.findBy(param, by);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }

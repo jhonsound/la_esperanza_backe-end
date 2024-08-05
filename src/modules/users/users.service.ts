@@ -67,7 +67,7 @@ export class UsersService {
       relations: [
         'studentLevel.studentExercises',
         'studentLevel.studentMission.studentLevels',
-        'studentLevel.studentMission.user',
+        'studentLevel.studentMission.user.studentMissions',
       ],
     });
     if (!studentExercise) {
@@ -77,6 +77,11 @@ export class UsersService {
     }
 
     studentExercise.score = newScore;
+    studentExercise.studentLevel.studentExercises.map((exercise) => {
+      if (exercise.id === Number(studentExerciseId)) {
+        exercise.score = newScore;
+      }
+    });
     await this.studentExerciseRepository.save(studentExercise);
 
     const studentLevel = studentExercise.studentLevel;
@@ -93,6 +98,12 @@ export class UsersService {
       0,
     );
     studentLevel.score = totalExerciseScore;
+    studentExercise.studentLevel.studentMission.studentLevels.map((level) => {
+      if (studentLevel.id === Number(level.id)) {
+        level.score = totalExerciseScore;
+      }
+    });
+
     await this.studentLevelRepository.save(studentLevel);
 
     const studentMission = studentLevel.studentMission;
@@ -101,10 +112,12 @@ export class UsersService {
         `StudentMission associated with StudentLevel ID "${studentLevel.id}" not found`,
       );
     }
+
     const totalLevelScore = (studentMission.studentLevels || []).reduce(
       (total, level) => total + level.score,
       0,
     );
+
     studentMission.score = totalLevelScore;
     await this.studentMissionRepository.save(studentMission);
 
@@ -115,11 +128,11 @@ export class UsersService {
       );
     }
 
-    const totalMissionScore = (user.studentMissions || []).reduce(
+    /* const totalMissionScore = (user.studentMissions || []).reduce(
       (total, mission) => total + mission.score,
       0,
-    );
-    user.score = totalMissionScore; // Asegúrate de que `totalScore` existe en User
+    ); */
+    user.score = totalLevelScore; // Asegúrate de que `totalScore` existe en User
     await this.userRepository.save(user);
   }
 
