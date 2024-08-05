@@ -8,6 +8,7 @@ import {
   Delete,
   NotFoundException,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 /* import { UpdateUserDto } from './dto/update-user.dto'; */
@@ -37,6 +38,42 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('assignMission')
+  findAllAssignMission() {
+    return this.usersService.findAllAssignMission();
+  }
+
+  @Get('assignMission/:id')
+  findByAssignMission(@Param('userId') id: string) {
+    return this.usersService.findByAssignMission(id);
+  }
+
+  @Get('assignMission/:userId/:missionId')
+  assignMission(
+    @Param('userId') userId: string,
+    @Param('missionId') missionId: string,
+  ) {
+    console.log('🚀 ~ UsersController ~ missionId:', missionId);
+    return this.usersService.assignMissionToUser(userId, missionId);
+  }
+
+  @Put('updateExerciseScore/:studentExerciseId')
+  async updateExerciseScore(
+    @Param('studentExerciseId') studentExerciseId: number,
+    @Body() updateScoreDto: { newScore: number },
+  ) {
+    const { newScore } = updateScoreDto;
+    if (newScore < 0) {
+      throw new BadRequestException('Score must be a non-negative number');
+    }
+    try {
+      await this.usersService.updateExerciseScore(studentExerciseId, newScore);
+      return { message: 'Exercise score updated successfully' };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
   @Post(':id')

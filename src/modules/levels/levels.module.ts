@@ -8,6 +8,7 @@ import { exercisesProvider } from '../exercises/exercises.provider';
 import { MissionService } from '../missions/missions.service';
 import { userProvider } from '../users/users.provider';
 import { MissionsModule } from '../missions/missions.module';
+import { studentMissionProvider } from '../users/student-mission.provider';
 
 @Module({
   imports: [DatabaseModule],
@@ -19,6 +20,7 @@ import { MissionsModule } from '../missions/missions.module';
     ...missionProvider,
     ...exercisesProvider,
     ...userProvider,
+    ...studentMissionProvider,
   ],
 })
 export class LevelsModule {}

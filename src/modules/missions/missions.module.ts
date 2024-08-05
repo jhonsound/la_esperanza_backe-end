@@ -6,6 +6,7 @@ import { missionProvider } from './missions.provider';
 import { userProvider } from '../users/users.provider';
 import { levelsProvider } from '../levels/levels.provider';
 import { UsersModule } from '../users/users.module';
+import { studentMissionProvider } from '../users/student-mission.provider';
 
 @Module({
   imports: [DatabaseModule, UsersModule],
@@ -15,6 +16,7 @@ import { UsersModule } from '../users/users.module';
     ...missionProvider,
     ...userProvider,
     ...levelsProvider,
+    ...studentMissionProvider,
   ],
   exports: [MissionService],
 })
