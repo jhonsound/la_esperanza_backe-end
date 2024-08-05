@@ -24,6 +24,7 @@ export class AuthService {
       const userFound = await this.usersService.findByEmail(
         registerDto.userName,
       );
+      console.log('🚀 ~ AuthService ~ register ~ userFound:');
       if (userFound) {
         throw new HttpException(
           'This email already exists',
@@ -31,10 +32,15 @@ export class AuthService {
         );
       }
       const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+      console.log(
+        '🚀 ~ AuthService ~ register ~ hashedPassword:',
+        hashedPassword,
+      );
       const newUser = await this.usersService.create({
         ...registerDto,
         password: hashedPassword,
       });
+      console.log('🚀 ~ AuthService ~ register ~ newUser:', newUser);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = newUser;
       const { access_token } = this.generateToken(result);

@@ -4,13 +4,22 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {
   CLANS_REPOSITORY,
+  MISSION_REPOSITORY,
   ROLE_REPOSITORY,
+  STUDENT_EXERCISE_REPOSITORY,
+  STUDENT_LEVEL_REPOSITORY,
+  STUDENT_MISSION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/constants/repository';
 import { RegisterDto } from '../auth/dto/auth.dto';
 import { Role } from '../roles/entities/role.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Clan } from '../clans/entities/clans.entity';
+import { Mission } from '../missions/entities/mission.entity';
+import { StudentMission } from './entities/student-mission.entity';
+import { StudentLevel } from './entities/student-level.entity';
+import { StudentExercise } from './entities/student-exercise.entity';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -20,6 +29,14 @@ export class UsersService {
     @Inject(ROLE_REPOSITORY) private readonly roleRepository: Repository<Role>,
     @Inject(CLANS_REPOSITORY)
     private readonly clansRepository: Repository<Clan>,
+    @Inject(MISSION_REPOSITORY)
+    private readonly missionRepository: Repository<Mission>,
+    @Inject(STUDENT_MISSION_REPOSITORY)
+    private readonly studentMissionRepository: Repository<StudentMission>,
+    @Inject(STUDENT_LEVEL_REPOSITORY)
+    private readonly studentLevelRepository: Repository<StudentLevel>,
+    @Inject(STUDENT_EXERCISE_REPOSITORY)
+    private readonly studentExerciseRepository: Repository<StudentExercise>,
   ) {}
 
   async getClanByUser(userId: string) {
@@ -41,6 +58,74 @@ export class UsersService {
     return user.clan;
   }
 
+  async updateExerciseScore(
+    studentExerciseId: number,
+    newScore: number,
+  ): Promise<void> {
+    const studentExercise = await this.studentExerciseRepository.findOne({
+      where: { id: studentExerciseId },
+      relations: [
+        'studentLevel.studentExercises',
+        'studentLevel.studentMission.studentLevels',
+        'studentLevel.studentMission.user',
+      ],
+    });
+    if (!studentExercise) {
+      throw new NotFoundException(
+        `StudentExercise with ID "${studentExerciseId}" not found`,
+      );
+    }
+
+    studentExercise.score = newScore;
+    await this.studentExerciseRepository.save(studentExercise);
+
+    const studentLevel = studentExercise.studentLevel;
+    if (!studentLevel) {
+      throw new Error(
+        `StudentLevel associated with StudentExercise ID "${studentExerciseId}" not found`,
+      );
+    }
+
+    const totalExerciseScore = studentLevel.studentExercises.reduce(
+      (total, exercise) => {
+        return total + exercise.score;
+      },
+      0,
+    );
+    studentLevel.score = totalExerciseScore;
+    await this.studentLevelRepository.save(studentLevel);
+
+    const studentMission = studentLevel.studentMission;
+    if (!studentMission) {
+      throw new Error(
+        `StudentMission associated with StudentLevel ID "${studentLevel.id}" not found`,
+      );
+    }
+    console.log('🚀 ~ UsersService ~ studentMission:', studentMission);
+
+    const totalLevelScore = (studentMission.studentLevels || []).reduce(
+      (total, level) => total + level.score,
+      0,
+    );
+    studentMission.score = totalLevelScore;
+    await this.studentMissionRepository.save(studentMission);
+
+    const user = studentMission.user;
+    if (!user) {
+      throw new Error(
+        `User associated with StudentMission ID "${studentMission.id}" not found`,
+      );
+    }
+
+    const totalMissionScore = (user.studentMissions || []).reduce(
+      (total, mission) => total + mission.score,
+      0,
+    );
+    user.score = totalMissionScore; // Asegúrate de que `totalScore` existe en User
+    await this.userRepository.save(user);
+    console.log('🚀 ~ UsersService ~ user:', user);
+  }
+
   async updateClan(userId: string, clanId: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -49,7 +134,6 @@ export class UsersService {
     }
 
     const clan = await this.clansRepository.findOne({ where: { id: clanId } });
-    console.log('🚀 ~ UsersService ~ updateClan ~ clan:', clan);
     if (!clan) {
       throw new NotFoundException(`Clan with ID ${clanId} not found`);
     }
@@ -70,33 +154,129 @@ export class UsersService {
       const clan = await this.clansRepository.findOne({
         where: { id: clanId },
       });
-      console.log('🚀 ~ UsersService ~ updateClan ~ clan:', clan);
       if (!clan) {
         throw new NotFoundException(`Clan with ID ${clanId} not found`);
+      }
+
+      const mission = await this.missionRepository.findOne({
+        where: { id: '7a32c456-d561-4ef0-8362-2b3d39ad7f86' },
+      });
+      if (!mission) {
+        throw new NotFoundException(
+          `Mission with ID '795e2a9d-c4c5-43f6-8b0c-670aa49e833a not found`,
+        );
       }
       const user = this.userRepository.create({
         ...userData,
         rol: role,
         clan: clan,
       });
+      /* user.studentMissions.push(mission); */
 
       return await this.userRepository.save(user);
     } catch (error) {
-      console.log('🚀 ~ UsersService ~ create ~ error:', error);
+      throw new NotFoundException(error);
+    }
+  }
+  async assignMissionToUser(userId: string, missionId: string) {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user)
+        throw new NotFoundException(`User with ID "${userId}" not found`);
+
+      const mission = await this.missionRepository.findOne({
+        where: { id: missionId },
+        relations: ['levels.exercises'],
+      });
+      if (!mission)
+        throw new NotFoundException(`Mission with ID "${missionId}" not found`);
+
+      const studentMission = new StudentMission();
+      studentMission.user = user;
+      studentMission.mission = mission;
+      studentMission.score = 0;
+      studentMission.studentLevels = []; // Inicializar como array vacío
+
+      for (const level of mission.levels) {
+        const studentLevel = new StudentLevel();
+        studentLevel.level = level;
+        studentLevel.progress = 0;
+        studentLevel.score = 0;
+        studentLevel.studentExercises = []; // Inicializar como array vacío
+        studentLevel.studentMission = studentMission;
+
+        for (const exercise of level.exercises) {
+          const studentExercise = new StudentExercise();
+          studentExercise.exercise = exercise;
+          studentExercise.score = 0;
+          studentLevel.studentExercises.push(studentExercise);
+        }
+        console.log('🚀 ~ UsersService ~ studentLevel:', studentLevel);
+
+        studentMission.studentLevels.push(studentLevel);
+        await this.studentLevelRepository.save(studentLevel);
+      }
+
+      await this.studentMissionRepository.save(studentMission);
+      console.log(
+        '🚀 ~ UsersService ~ studentMission:',
+        studentMission.studentLevels,
+      );
+
+      return plainToInstance(StudentMission, studentMission, {
+        excludeExtraneousValues: true,
+      });
+    } catch (error) {
+      console.log('🚀 ~ UsersService ~ assignMissionToUser ~ error:', error);
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  /* 82abbfad-918e-4307-9ff0-975fe1287f5f */
+
+  async findAllAssignMission() {
+    try {
+      return await this.studentMissionRepository.find({
+        relations: [
+          /* 'user',
+          'mission', */
+          'studentLevels.studentExercises.exercise',
+        ],
+      });
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
+  }
+
+  async findByAssignMission(id: string) {
+    try {
+      return await this.studentMissionRepository.find({
+        where: { id },
+        relations: ['user', 'mission', 'studentLevels'],
+      });
+    } catch (error) {
       throw new NotFoundException(error);
     }
   }
 
   async findAll() {
-    return await this.userRepository.find({
-      relations: ['clan', 'rol', 'missions.levels.exercises'],
-    });
+    try {
+      return await this.userRepository.find({
+        relations: [
+          'clan',
+          'rol',
+          'studentMissions.studentLevels.studentExercises.exercise',
+        ],
+      });
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
   }
 
   async findByEmail(userName: string) {
     return await this.userRepository.findOne({
       where: { userName },
-      relations: ['clan.members', 'rol.user', 'missions.levels.exercises'],
+      relations: ['clan.members', 'rol.users', 'studentMissions'],
     });
   }
 
@@ -109,7 +289,6 @@ export class UsersService {
         },
         relations: ['clan.members', 'rol.user', 'missions.levels.exercises'],
       });
-      console.log('🚀 ~ UsersService ~ findBy ~ user:', user);
       return user;
     } catch (error) {
       throw new NotFoundException(error);

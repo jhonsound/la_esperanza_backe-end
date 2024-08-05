@@ -1,6 +1,13 @@
 // src/entities/ejercicio.entity.ts
 import { Level } from 'src/modules/levels/entities/level.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { StudentExercise } from 'src/modules/users/entities/student-exercise.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
 @Entity('exercises')
 export class Exercise {
@@ -21,4 +28,10 @@ export class Exercise {
 
   @ManyToOne(() => Level, (level) => level.exercises)
   level: Level;
+
+  @OneToMany(
+    () => StudentExercise,
+    (studentExercise) => studentExercise.exercise,
+  )
+  studentExercises: StudentExercise[];
 }

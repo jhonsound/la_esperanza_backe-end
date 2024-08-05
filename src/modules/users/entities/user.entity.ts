@@ -1,13 +1,14 @@
+// src/modules/users/entities/user.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  OneToMany,
   ManyToOne,
-  ManyToMany,
 } from 'typeorm';
 import { Role } from 'src/modules/roles/entities/role.entity';
-import { Mission } from 'src/modules/missions/entities/mission.entity';
 import { Clan } from 'src/modules/clans/entities/clans.entity';
+import { StudentMission } from './student-mission.entity';
 
 @Entity('users')
 export class User {
@@ -26,15 +27,15 @@ export class User {
   @Column({ name: 'identity_card' })
   identityCard: string;
 
-  @Column()
+  @Column({ type: 'int', default: 0 })
   score: number;
 
-  @ManyToOne(() => Role, (role) => role.user)
+  @ManyToOne(() => Role, (role) => role.users)
   rol: Role;
 
   @ManyToOne(() => Clan, (clan) => clan.members)
   clan: Clan;
 
-  @ManyToMany(() => Mission, (mission) => mission.users)
-  missions: Mission[];
+  @OneToMany(() => StudentMission, (studentMission) => studentMission.user)
+  studentMissions: StudentMission[];
 }

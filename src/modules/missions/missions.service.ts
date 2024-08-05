@@ -8,8 +8,10 @@ import { UpdateMissionDto } from './dto/update-mission.dto';
 import {
   LEVEL_REPOSITORY,
   MISSION_REPOSITORY,
+  STUDENT_MISSION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/constants/repository';
+import { StudentMission } from '../users/entities/student-mission.entity';
 
 @Injectable()
 export class MissionService {
@@ -22,32 +24,34 @@ export class MissionService {
 
     @Inject(USER_REPOSITORY)
     private userRepository: Repository<User>,
+
+    @Inject(STUDENT_MISSION_REPOSITORY)
+    private readonly studentMissionRepository: Repository<StudentMission>,
   ) {}
 
   async create(createMissionDto: CreateMissionDto): Promise<Mission> {
-    console.log(
-      '🚀 ~ MissionService ~ create ~ createMissionDto:',
-      createMissionDto,
-    );
     const mission = this.missionRepository.create({
       name: createMissionDto.name,
       missionDescription: createMissionDto.description,
     });
-    console.log('🚀 ~ MissionService ~ create ~ mission:', mission);
     await this.missionRepository.save(mission);
     return mission;
   }
 
   async findAll(): Promise<Mission[]> {
-    return await this.missionRepository.find({
-      relations: ['levels', 'levels.exercises', 'users'],
-    });
+    try {
+      return await this.missionRepository.find({
+        relations: ['levels', 'levels.exercises', 'studentMissions'],
+      });
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
   async findOne(id: string): Promise<Mission> {
     const mission = await this.missionRepository.findOne({
       where: { id },
-      relations: ['levels', 'levels.exercises', 'users'],
+      relations: ['levels.exercises', 'studentMissions'],
     });
     if (!mission) {
       throw new NotFoundException(`Mission with ID ${id} not found`);
@@ -69,16 +73,70 @@ export class MissionService {
     await this.missionRepository.remove(mission);
   }
 
-  async addLevel(missionId: string, levelId: string): Promise<Mission> {
-    const mission = await this.findOne(missionId);
-    const level = await this.levelRepository.findOne({
-      where: { id: levelId },
-    });
-    if (!level) {
-      throw new NotFoundException(`Level with ID ${levelId} not found`);
+  async addLevel(missionId: string, levelId: string) /* : Promise<Mission> */ {
+    console.log('🚀 ~ MissionService ~ addLevel ~ levelId:', levelId);
+    console.log('🚀 ~ MissionService ~ addLevel ~ missionId:', missionId);
+    try {
+      const mission = await this.findOne(missionId);
+      const level = await this.levelRepository.findOne({
+        where: { id: levelId },
+      });
+      console.log('🚀 ~ MissionService ~ addLevel ~ level:', level);
+      if (!level) {
+        throw new NotFoundException(`Level with ID ${levelId} not found`);
+      }
+      mission.levels.push(level);
+      return await this.missionRepository.save(mission);
+    } catch (error) {
+      console.log('🚀 ~ MissionService ~ addLevel ~ error:', error);
+      throw new Error(error);
     }
-    mission.levels.push(level);
-    return await this.missionRepository.save(mission);
+  }
+
+  async assignUserToMission(missionId: string, userId: string): Promise<void> {
+    try {
+      // Buscar la misión
+      const mission = await this.missionRepository.findOne({
+        where: { id: missionId },
+      });
+      if (!mission) {
+        throw new NotFoundException(`Mission with ID ${missionId} not found`);
+      }
+
+      // Buscar el usuario
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+
+      // Verificar si ya existe una asignación de misión para el usuario
+      const existingStudentMission =
+        await this.studentMissionRepository.findOne({
+          where: { mission: { id: missionId }, user: { id: userId } },
+        });
+      if (existingStudentMission) {
+        throw new Error(
+          `User with ID ${userId} is already assigned to mission ${missionId}`,
+        );
+      }
+
+      // Crear una nueva instancia de StudentMission
+      const newStudentMission = this.studentMissionRepository.create({
+        mission,
+        user,
+        score: 0,
+      });
+
+      // Guardar la nueva asignación
+      await this.studentMissionRepository.save(newStudentMission);
+    } catch (error) {
+      console.error('Error in assignUserToMission:', error);
+      throw new Error(
+        'An error occurred while assigning the user to the mission',
+      );
+    }
   }
 
   async removeLevel(missionId: string, levelId: string): Promise<Mission> {
@@ -87,19 +145,11 @@ export class MissionService {
     return await this.missionRepository.save(mission);
   }
 
-  async addUser(missionId: string, userId: string): Promise<Mission> {
-    const mission = await this.findOne(missionId);
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
-    mission.users.push(user);
-    return await this.missionRepository.save(mission);
-  }
-
   async removeUser(missionId: string, userId: string): Promise<Mission> {
     const mission = await this.findOne(missionId);
-    mission.users = mission.users.filter((user) => user.id !== userId);
+    mission.studentMissions = mission.studentMissions.filter(
+      (user) => user.id !== userId,
+    );
     return await this.missionRepository.save(mission);
   }
 
@@ -118,7 +168,7 @@ export class MissionService {
     );
     await this.missionRepository.save(mission);
 
-    for (const user of mission.users) {
+    for (const user of mission.studentMissions) {
       user.score += mission.score;
       await this.userRepository.save(user);
     }

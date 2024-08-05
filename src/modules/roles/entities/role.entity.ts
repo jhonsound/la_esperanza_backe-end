@@ -1,4 +1,4 @@
-// src/entities/rol.entity.ts
+// src/modules/roles/entities/role.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
 
@@ -11,5 +11,5 @@ export class Role {
   name: string;
 
   @OneToMany(() => User, (user) => user.rol)
-  user: User[];
+  users: User[];
 }

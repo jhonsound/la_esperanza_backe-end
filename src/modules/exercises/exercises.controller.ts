@@ -22,12 +22,17 @@ export class ExercisesController {
     return this.exercisesService.create(createExerciseDto);
   }
 
-  @Post(':exerciseId')
+  @Post(':exerciseId/:studentId')
   updateExerciseScore(
     @Param('exerciseId') exerciseId: number,
-    @Body() score: number,
+    @Param('studentId') studentId: string,
+    @Body() { score }: { score: number },
   ) {
-    return this.exercisesService.updateExerciseScore(exerciseId, score);
+    return this.exercisesService.updateExerciseScore(
+      studentId,
+      exerciseId,
+      score,
+    );
   }
 
   @Get()
