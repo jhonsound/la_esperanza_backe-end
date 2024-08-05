@@ -49,11 +49,9 @@ export class MissionController {
     return this.missionService.remove(id);
   }
 
-  @Post(':id/levels/:levelId')
-  addLevel(
-    @Param('id', ParseIntPipe) id: string,
-    @Param('levelId', ParseIntPipe) levelId: string,
-  ) {
+  @Post('add-level/:id/levels/:levelId')
+  addLevel(@Param('id') id: string, @Param('levelId') levelId: string) {
+    console.log("🚀 ~ MissionController ~ addLevel ~ id:", id)
     return this.missionService.addLevel(id, levelId);
   }
 
@@ -65,10 +63,10 @@ export class MissionController {
     return this.missionService.removeLevel(id, levelId);
   }
 
-  @Post(':id/users/:userId')
+  /*   @Post(':id/users/:userId')
   addUser(@Param('id') id: string, @Param('userId') userId: string) {
     return this.missionService.addUser(id, userId);
-  }
+  } */
 
   @Delete(':id/users/:userId')
   removeUser(

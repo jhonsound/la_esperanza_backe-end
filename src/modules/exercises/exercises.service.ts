@@ -1,16 +1,32 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateExerciseDto } from './dto/create-exercise.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { Exercise } from './entities/exercise.entity';
 import { Repository } from 'typeorm';
 import { LevelsService } from '../levels/levels.service';
-import { EXERCISES_REPOSITORY } from 'src/constants/repository';
+import {
+  EXERCISES_REPOSITORY,
+  STUDENT_EXERCISE_REPOSITORY,
+  STUDENT_LEVEL_REPOSITORY,
+  STUDENT_MISSION_REPOSITORY,
+} from 'src/constants/repository';
+import { StudentExercise } from '../users/entities/student-exercise.entity';
+import { StudentLevel } from '../users/entities/student-level.entity';
+import { StudentMission } from '../users/entities/student-mission.entity';
+import { CreateExerciseDto } from './dto/create-exercise.dto';
 
 @Injectable()
 export class ExercisesService {
   constructor(
     @Inject(EXERCISES_REPOSITORY)
     private readonly exerciseRepository: Repository<Exercise>,
+    @Inject(STUDENT_EXERCISE_REPOSITORY)
+    private readonly studentExercisesRepository: Repository<StudentExercise>,
+
+    @Inject(STUDENT_LEVEL_REPOSITORY)
+    private readonly studentLevelsRepository: Repository<StudentLevel>,
+
+    @Inject(STUDENT_MISSION_REPOSITORY)
+    private readonly studentMissionsRepository: Repository<StudentMission>,
     private readonly levelService: LevelsService,
   ) {}
 
@@ -18,19 +34,70 @@ export class ExercisesService {
     return 'This action adds a new exercise';
   }
 
-  async updateExerciseScore(exerciseId: number, score: number): Promise<void> {
-    const exercise = await this.exerciseRepository.findOne({
-      where: { id: exerciseId },
-      relations: ['level'],
+  async updateExerciseScore(
+    studentId: string,
+    exerciseId: number,
+    score: number,
+  ): Promise<void> {
+    const studentExercise = await this.studentExercisesRepository.findOne({
+      where: {
+        studentLevel: { studentMission: { user: { id: studentId } } },
+        exercise: { id: exerciseId },
+      },
+      relations: [
+        'studentLevel',
+        'exercise',
+        'studentLevel.studentMission',
+        'studentLevel.studentMission.user',
+      ],
     });
-    if (!exercise) {
-      throw new Error('Exercise not found');
+
+    if (!studentExercise) {
+      throw new NotFoundException(
+        `StudentExercise not found for studentId ${studentId} and exerciseId ${exerciseId}`,
+      );
     }
 
-    exercise.score = score;
-    await this.exerciseRepository.save(exercise);
+    studentExercise.score = score;
+    await this.studentExercisesRepository.save(studentExercise);
 
-    await this.levelService.updateLevelScore(exercise.level.id);
+    const studentLevel = studentExercise.studentLevel;
+    studentLevel.score = await this.calculateTotalScoreForStudentLevel(
+      studentLevel.id,
+    );
+    await this.studentLevelsRepository.save(studentLevel);
+
+    const studentMission = studentLevel.studentMission;
+    studentMission.score = await this.calculateTotalScoreForStudentMission(
+      studentMission.id,
+    );
+    await this.studentMissionsRepository.save(studentMission);
+  }
+
+  private async calculateTotalScoreForStudentLevel(
+    studentLevelId: number,
+  ): Promise<number> {
+    const studentLevel = await this.studentLevelsRepository.findOne({
+      where: { id: studentLevelId },
+      relations: ['studentExercises'],
+    });
+    return studentLevel.studentExercises.reduce(
+      (total, exercise) => total + exercise.score,
+      0,
+    );
+  }
+
+  private async calculateTotalScoreForStudentMission(
+    studentMissionId: string,
+  ): Promise<number> {
+    const studentMission = await this.studentMissionsRepository.findOne({
+      where: { id: studentMissionId },
+      relations: ['studentLevels'],
+    });
+    return studentMission.studentLevels.reduce(
+      (total, level) => total + level.score,
+      0,
+    );
   }
 
   findAll() {
