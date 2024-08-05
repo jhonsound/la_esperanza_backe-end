@@ -101,8 +101,6 @@ export class UsersService {
         `StudentMission associated with StudentLevel ID "${studentLevel.id}" not found`,
       );
     }
-    console.log('🚀 ~ UsersService ~ studentMission:', studentMission);
-
     const totalLevelScore = (studentMission.studentLevels || []).reduce(
       (total, level) => total + level.score,
       0,
@@ -123,7 +121,6 @@ export class UsersService {
     );
     user.score = totalMissionScore; // Asegúrate de que `totalScore` existe en User
     await this.userRepository.save(user);
-    console.log('🚀 ~ UsersService ~ user:', user);
   }
 
   async updateClan(userId: string, clanId: number): Promise<User> {
@@ -211,23 +208,15 @@ export class UsersService {
           studentExercise.score = 0;
           studentLevel.studentExercises.push(studentExercise);
         }
-        console.log('🚀 ~ UsersService ~ studentLevel:', studentLevel);
-
         studentMission.studentLevels.push(studentLevel);
         await this.studentLevelRepository.save(studentLevel);
       }
 
       await this.studentMissionRepository.save(studentMission);
-      console.log(
-        '🚀 ~ UsersService ~ studentMission:',
-        studentMission.studentLevels,
-      );
-
       return plainToInstance(StudentMission, studentMission, {
         excludeExtraneousValues: true,
       });
     } catch (error) {
-      console.log('🚀 ~ UsersService ~ assignMissionToUser ~ error:', error);
       throw new NotFoundException(error.message);
     }
   }
@@ -261,23 +250,27 @@ export class UsersService {
 
   async findAll() {
     try {
-      return await this.userRepository.find({
+      const users = await this.userRepository.find({
         relations: [
           'clan',
           'rol',
           'studentMissions.studentLevels.studentExercises.exercise',
         ],
       });
+      users.map((user) => delete user.password);
+      return users;
     } catch (error) {
       throw new NotFoundException(error);
     }
   }
 
   async findByEmail(userName: string) {
-    return await this.userRepository.findOne({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const user = await this.userRepository.findOne({
       where: { userName },
       relations: ['clan.members', 'rol.users', 'studentMissions'],
     });
+    return user;
   }
 
   async findBy(param: string, { by }: { by: string }) {
