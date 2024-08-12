@@ -169,8 +169,9 @@ export class UsersService {
       }
 
       const mission = await this.missionRepository.findOne({
-        where: { id: '7a32c456-d561-4ef0-8362-2b3d39ad7f86' },
+        where: { id: '0ad33b74-0d12-44ed-a2ee-16dd3543ee17' },
       });
+      console.log("🚀 ~ UsersService ~ create ~ mission:", mission)
       if (!mission) {
         throw new NotFoundException(
           `Mission with ID '795e2a9d-c4c5-43f6-8b0c-670aa49e833a not found`,
@@ -186,7 +187,7 @@ export class UsersService {
       );
       await this.assignMissionToUser(
         userSave.id,
-        '7a32c456-d561-4ef0-8362-2b3d39ad7f86',
+        '0ad33b74-0d12-44ed-a2ee-16dd3543ee17',
       );
       return userSave;
     } catch (error) {

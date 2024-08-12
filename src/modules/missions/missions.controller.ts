@@ -28,7 +28,7 @@ export class MissionController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string) {
+  findOne(@Param('id') id: string) {
     return this.missionService.findOne(id);
   }
 
