@@ -171,7 +171,7 @@ export class UsersService {
       const mission = await this.missionRepository.findOne({
         where: { id: '0ad33b74-0d12-44ed-a2ee-16dd3543ee17' },
       });
-      console.log("🚀 ~ UsersService ~ create ~ mission:", mission)
+      console.log('🚀 ~ UsersService ~ create ~ mission:', mission);
       if (!mission) {
         throw new NotFoundException(
           `Mission with ID '795e2a9d-c4c5-43f6-8b0c-670aa49e833a not found`,
@@ -260,7 +260,11 @@ export class UsersService {
     try {
       return await this.studentMissionRepository.find({
         where: { id },
-        relations: ['user', 'mission', 'studentLevels'],
+        relations: [
+          'user',
+          'mission',
+          'studentLevels.StudentExercise.Exercise',
+        ],
       });
     } catch (error) {
       throw new NotFoundException(error);
@@ -286,7 +290,11 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const user = await this.userRepository.findOne({
       where: { userName },
-      relations: ['clan.members', 'rol.users', 'studentMissions'],
+      relations: [
+        'clan.members',
+        'rol.users',
+        'studentMissions.studentLevels.studentExercises.exercise',
+      ],
     });
     return user;
   }
