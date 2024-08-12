@@ -49,10 +49,12 @@ export class MissionService {
   }
 
   async findOne(id: string): Promise<Mission> {
+    console.log("🚀 ~ MissionService ~ findOne ~ id:", id)
     const mission = await this.missionRepository.findOne({
       where: { id },
       relations: ['levels.exercises', 'studentMissions'],
     });
+    console.log("🚀 ~ MissionService ~ findOne ~ mission:", mission)
     if (!mission) {
       throw new NotFoundException(`Mission with ID ${id} not found`);
     }

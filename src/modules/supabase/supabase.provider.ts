@@ -7,7 +7,9 @@ export const supabaseProvider = [
     provide: SUPABASE_CLIENT,
     useFactory: async (configService: ConfigService) => {
       const supabaseUrl = configService.get('supabaseUrl');
+      console.log('🚀 ~ useFactory: ~ supabaseUrl:', supabaseUrl);
       const supabaseKey = configService.get('supabaseKey');
+      console.log(supabaseKey);
       return createClient(supabaseUrl, supabaseKey);
     },
     inject: [ConfigService],
