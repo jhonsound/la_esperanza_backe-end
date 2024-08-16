@@ -22,7 +22,7 @@ import configuration from './modules/database/configuration';
     UsersModule,
     ExercisesModule,
     ClansModule,
-    /* SupabaseModule, */
+    SupabaseModule,
   ],
 })
 export class AppModule {}

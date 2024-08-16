@@ -108,8 +108,15 @@ export class ExercisesService {
     return `This action returns a #${id} exercise`;
   }
 
-  update(id: number, updateExerciseDto: UpdateExerciseDto) {
-    return `This action updates a #${id} exercise`;
+  async update(id: number, updateExerciseDto: UpdateExerciseDto) {
+    const exercise = await this.exerciseRepository.findOne({ where: { id } });
+    if (!exercise) {
+      throw new NotFoundException(`exercise with ID "${id}" not found`);
+    }
+
+    Object.assign(exercise, updateExerciseDto);
+
+    return await this.exerciseRepository.save(exercise);
   }
 
   remove(id: number) {
