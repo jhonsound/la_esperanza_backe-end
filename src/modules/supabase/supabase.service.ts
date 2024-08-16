@@ -9,7 +9,8 @@ export class SupabaseService {
     @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient,
   ) {}
 
-  async uploadFile(file: Express.MulterFile, bucket: string): Promise<any> {
+  async uploadFile(file: any, bucket: string): Promise<any> {
+    console.log("🚀 ~ SupabaseService ~ uploadFile ~ file:", file)
     try {
       const { originalname, buffer } = file;
 
@@ -29,7 +30,7 @@ export class SupabaseService {
       console.log("🚀 ~ SupabaseService ~ uploadFile ~ fileName:", fileName)
       const { data, error } = await this.supabase.storage
         .from(bucket)
-        .upload(fileName, buffer);
+        .upload(fileName, file);
 
       if (error) {
         console.log('🚀 ~ SupabaseService ~ uploadFile ~ error:', error);

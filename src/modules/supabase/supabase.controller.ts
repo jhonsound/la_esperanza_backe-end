@@ -14,7 +14,7 @@ export class SupabaseController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.MulterFile) {
+  async uploadFile(@UploadedFile() file: any) {
     console.log('🚀 ~ SupabaseController ~ uploadFile ~ file:', file);
     const bucket = 'school-esperanza';
     return this.storageService.uploadFile(file, bucket);
