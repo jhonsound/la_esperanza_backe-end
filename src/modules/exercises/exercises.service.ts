@@ -59,6 +59,7 @@ export class ExercisesService {
     }
 
     studentExercise.score = score;
+    studentExercise.status = true;
     await this.studentExercisesRepository.save(studentExercise);
 
     const studentLevel = studentExercise.studentLevel;
@@ -108,15 +109,38 @@ export class ExercisesService {
     return `This action returns a #${id} exercise`;
   }
 
-  async update(id: number, updateExerciseDto: UpdateExerciseDto) {
-    const exercise = await this.exerciseRepository.findOne({ where: { id } });
-    if (!exercise) {
-      throw new NotFoundException(`exercise with ID "${id}" not found`);
+  async update(
+    exerciseName: string,
+    updateExerciseDto: { urlFrame: string },
+    studentId: string,
+  ) {
+    const studentExercise = await this.studentExercisesRepository.findOne({
+      where: {
+        exercise: {
+          name: exerciseName,
+        },
+        studentLevel: {
+          studentMission: {
+            user: {
+              id: studentId,
+            },
+          },
+        },
+      },
+      relations: ['exercise', 'studentLevel.studentMission.user'],
+    });
+    console.log('🚀 ~ ExercisesService ~ studentExercise:', studentExercise);
+    if (!studentExercise) {
+      throw new NotFoundException(
+        `exercise with ID "${exerciseName}" not found`,
+      );
     }
+    studentExercise.urlFile = updateExerciseDto.urlFrame;
 
-    Object.assign(exercise, updateExerciseDto);
+    /* Object.assign(studentExercise, updateExerciseDto); */
+    console.log('🚀 ~ ExercisesService ~ studentExercise:', studentExercise);
 
-    return await this.exerciseRepository.save(exercise);
+    return await this.studentExercisesRepository.save(studentExercise);
   }
 
   remove(id: number) {

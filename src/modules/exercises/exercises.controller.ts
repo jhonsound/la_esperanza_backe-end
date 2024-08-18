@@ -45,12 +45,18 @@ export class ExercisesController {
     return this.exercisesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch(':exerciseName/:studentId')
   update(
-    @Param('id') id: string,
-    @Body() updateExerciseDto: UpdateExerciseDto,
+    @Param('exerciseName') exerciseName: string,
+    @Param('studentId') studentId: string,
+    @Body() updateExerciseDto: { urlFrame: string },
   ) {
-    return this.exercisesService.update(+id, updateExerciseDto);
+    console.log('🚀 ~ ExercisesController ~ studentId:', studentId);
+    return this.exercisesService.update(
+      exerciseName,
+      updateExerciseDto,
+      studentId,
+    );
   }
 
   @Delete(':id')
