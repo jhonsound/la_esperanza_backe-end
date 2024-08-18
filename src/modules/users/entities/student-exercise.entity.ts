@@ -10,11 +10,15 @@ export class StudentExercise {
   @ManyToOne(() => StudentLevel, (level) => level.studentExercises)
   studentLevel: StudentLevel;
 
+  @Column({ type: 'text', nullable: true, default: false })
+  status: boolean;
+
   @ManyToOne(() => Exercise)
   exercise: Exercise;
 
   @Column()
   score: number; // Puntaje específico del estudiante para este ejercicio
 
-  // Otros campos relevantes
+  @Column({ default: 'empty' })
+  urlFile: string;
 }
