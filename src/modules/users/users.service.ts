@@ -320,12 +320,25 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    console.log('🚀 ~ UsersService ~ update ~ updateUserDto:', updateUserDto);
     const user = await this.userRepository.findOne({ where: { id } });
+    console.log("🚀 ~ UsersService ~ update ~ user:", user)
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
     Object.assign(user, updateUserDto);
+
+    if (updateUserDto.clanId) {
+      console.log("🚀 ~ UsersService ~ update ~ updateUserDto.clanId:", updateUserDto.clanId)
+      const newClan = await this.clansRepository.findOneBy({
+        id: updateUserDto.clanId,
+      });
+      console.log("🚀 ~ UsersService ~ update ~ newClan:", newClan)
+      if (newClan) {
+        user.clan = newClan;
+      }
+    }
 
     if (updateUserDto.rolId) {
       const newRole = await this.roleRepository.findOneBy({
@@ -335,6 +348,7 @@ export class UsersService {
         user.rol = newRole;
       }
     }
+    console.log('🚀 ~ UsersService ~ update ~ user:', user);
 
     return await this.userRepository.save(user);
   }
