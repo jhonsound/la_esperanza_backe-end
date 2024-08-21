@@ -18,6 +18,7 @@ export class ClansController {
 
   @Post()
   create(@Body() createClanDto: CreateClanDto) {
+    console.log("🚀 ~ ClansController ~ create ~ createClanDto:", createClanDto)
     return this.clansService.create(createClanDto);
   }
 
