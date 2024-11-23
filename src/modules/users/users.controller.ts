@@ -58,9 +58,8 @@ export class UsersController {
     return this.usersService.assignMissionToUser(userId, missionId);
   }
 
-  @Put('updateExerciseScore/:studentExerciseId')
+  @Put('updateExerciseScore')
   async updateExerciseScore(
-    @Param('studentExerciseId') studentExerciseId: number,
     @Body() updateScoreDto: { newScore: number; exerciseId: number },
   ) {
     const { newScore, exerciseId } = updateScoreDto;
