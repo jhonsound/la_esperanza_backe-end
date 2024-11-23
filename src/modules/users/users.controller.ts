@@ -58,17 +58,16 @@ export class UsersController {
     return this.usersService.assignMissionToUser(userId, missionId);
   }
 
-  @Put('updateExerciseScore/:studentExerciseId')
+  @Put('updateExerciseScore')
   async updateExerciseScore(
-    @Param('studentExerciseId') studentExerciseId: number,
-    @Body() updateScoreDto: { newScore: number },
+    @Body() updateScoreDto: { newScore: number; exerciseId: number },
   ) {
-    const { newScore } = updateScoreDto;
+    const { newScore, exerciseId } = updateScoreDto;
     if (newScore < 0) {
       throw new BadRequestException('Score must be a non-negative number');
     }
     try {
-      await this.usersService.updateExerciseScore(studentExerciseId, newScore);
+      await this.usersService.updateExerciseScore(exerciseId, newScore);
       return { message: 'Exercise score updated successfully' };
     } catch (error) {
       throw new NotFoundException(error.message);
